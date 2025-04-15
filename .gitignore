@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+_pycache_/
+*.py[cod]
+*$py.class
+
+# Virtual environment (Python)
+venv/
+myenv/
+env/
+*.env
+*.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Django-related files
+db.sqlite3
+*.pyc
+*.pyo
+*.log
+*.pot
+*.mo
+*.swp
+
+# Secret settings (if stored in .env)
+.env
+*.secret
+
+# VSCode settings (if using VSCode)
+.vscode/
+
+# IDEs & Editors
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+
+# Django static & media files
+staticfiles/
+media/
+
+# Ignore compiled translations
+locale/**/django.mo
+locale/**/django.po~
+
+# Logs & Debugging files
+*.log
+logs/
+debug.log
+error.log
+
+# PostgreSQL (ignore dumps & backups)
+*.sql
+*.dump
