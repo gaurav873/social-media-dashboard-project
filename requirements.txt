@@ -1,0 +1,5 @@
+Django>=4.0
+social-auth-app-django>=5.0.0
+requests>=2.25.0
+pkce>=1.0.0
+python-decouple>=3.8 

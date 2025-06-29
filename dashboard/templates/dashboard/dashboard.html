@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h2 class="mb-0">Dashboard</h2>
+    <form class="d-flex align-items-center" method="get">
+      <label for="platform" class="me-2 mb-0">Filter by platform:</label>
+      <select name="platform" id="platform" class="form-select form-select-sm" style="width: 160px;">
+        <option value="all">All</option>
+        <option value="twitter">Twitter</option>
+        <option value="instagram">Instagram</option>
+      </select>
+      <button type="submit" class="btn btn-outline-primary btn-sm ms-2">Filter</button>
+    </form>
+  </div>
+</div>
+<div class="mb-4">
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3"><i class="bi bi-pencil-square"></i> New Post</h5>
+      {% if twitter_connected %}
+        <span class="badge bg-success mb-3"><i class="bi bi-twitter"></i> Twitter Connected</span>
+        {% if twitter_username %}
+          <span class="text-muted small ms-2">@{{ twitter_username }}</span>
+        {% endif %}
+        <form method="post" action="{% url 'disconnect_twitter' %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm ms-2">Disconnect Twitter</button>
+        </form> 
+      {% else %}
+        <a href="{% url 'connect_twitter' %}" class="btn btn-info mb-3">
+          <i class="bi bi-twitter"></i> Connect Twitter
+        </a>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <textarea class="form-control" name="post_content" rows="2" placeholder="What's on your mind?" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Post to:</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="platforms" value="twitter" id="twitterCheck">
+            <label class="form-check-label" for="twitterCheck"><i class="bi bi-twitter"></i> Twitter</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="platforms" value="instagram" id="instagramCheck">
+            <label class="form-check-label" for="instagramCheck"><i class="bi bi-instagram"></i> Instagram</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Schedule:</label>
+          <input type="datetime-local" class="form-control form-control-sm" name="schedule_time">
+        </div>
+        <button type="submit" class="btn btn-primary">Post Now</button>
+        <button type="submit" class="btn btn-outline-secondary ms-2">Schedule Later</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="mb-4">
+  <h4 class="mb-3"><i class="bi bi-rss"></i> Recent Posts</h4>
+  <div class="row g-4">
+    {% for post in twitter_posts %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+          <div class="card-body p-4 d-flex flex-column">
+            <div class="d-flex align-items-center mb-2 flex-wrap">
+              <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center me-3 mb-2 mb-md-0" style="width: 44px; height: 44px; font-size: 1.3rem;">
+                <i class="bi bi-twitter"></i>
+              </div>
+              <div>
+                <div class="fw-bold">@twitter_user</div>
+                <div class="text-muted small">2h ago</div>
+              </div>
+              <span class="ms-auto badge bg-info-subtle text-info mt-2 mt-md-0"><i class="bi bi-twitter"></i> Twitter</span>
+            </div>
+            <div class="mb-2 fs-5">{{ post.title|truncatechars:40 }}</div>
+            <div class="mb-3 text-secondary flex-grow-1">{{ post.body|truncatechars:100 }}</div>
+            <div class="d-flex align-items-center justify-content-between flex-wrap border-top pt-3 mt-3">
+              <div class="mb-2 mb-md-0">
+                <span class="me-4"><i class="bi bi-heart"></i> 12</span>
+                <span class="me-4"><i class="bi bi-chat"></i> 3</span>
+                <span class="me-4"><i class="bi bi-share"></i> 2</span>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-outline-primary">Like</button>
+                <button class="btn btn-sm btn-outline-secondary ms-2">Comment</button>
+                <button class="btn btn-sm btn-outline-success ms-2">Share</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% for post in instagram_posts %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+          <div class="row g-0 align-items-center flex-column flex-md-row">
+            <div class="col-12 col-md-4 text-center">
+              <img src="{{ post.thumbnailUrl }}" class="img-fluid rounded-start my-2" alt="Instagram image" style="max-height: 120px; object-fit: cover;">
+            </div>
+            <div class="col-12 col-md-8">
+              <div class="card-body p-4 d-flex flex-column">
+                <div class="d-flex align-items-center mb-2 flex-wrap">
+                  <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center me-3 mb-2 mb-md-0" style="width: 44px; height: 44px; font-size: 1.3rem;">
+                    <i class="bi bi-instagram"></i>
+                  </div>
+                  <div>
+                    <div class="fw-bold">@insta_user</div>
+                    <div class="text-muted small">1h ago</div>
+                  </div>
+                  <span class="ms-auto badge bg-danger-subtle text-danger mt-2 mt-md-0"><i class="bi bi-instagram"></i> Instagram</span>
+                </div>
+                <div class="mb-2 fs-5">{{ post.title|truncatechars:40 }}</div>
+                <div class="d-flex align-items-center justify-content-between flex-wrap border-top pt-3 mt-3 flex-grow-1">
+                  <div class="mb-2 mb-md-0">
+                    <span class="me-4"><i class="bi bi-heart"></i> 20</span>
+                    <span class="me-4"><i class="bi bi-chat"></i> 5</span>
+                    <span class="me-4"><i class="bi bi-share"></i> 4</span>
+                  </div>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary">Like</button>
+                    <button class="btn btn-sm btn-outline-secondary ms-2">Comment</button>
+                    <button class="btn btn-sm btn-outline-success ms-2">Share</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% if not twitter_posts and not instagram_posts %}
+      <div class="col-12">
+        <div class="alert alert-secondary">No posts found.</div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<div class="row mt-4">
+  <div class="col-12 col-lg-4">
+    <h4 class="mb-3"><i class="bi bi-bar-chart"></i> Analytics</h4>
+    <div class="card shadow-sm p-3 mb-4">
+      <div class="text-center text-muted">Analytics widgets coming soon...</div>
+    </div>
+  </div>
+</div>
+{% endblock %} 
