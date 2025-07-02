@@ -127,6 +127,17 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CSRF Configuration
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
+
+# Session Configuration
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+
 # Social Auth settings (placeholders, to be configured later)
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.twitter.TwitterOAuth',
@@ -143,6 +154,11 @@ SOCIAL_AUTH_TWITTER_SECRET = config('SOCIAL_AUTH_TWITTER_SECRET')
 TWITTER_CLIENT_ID = config("TWITTER_CLIENT_ID")
 TWITTER_CLIENT_SECRET = config("TWITTER_CLIENT_SECRET")
 TWITTER_REDIRECT_URI = config("TWITTER_REDIRECT_URI")
+
+REDDIT_CLIENT_ID = config('REDDIT_CLIENT_ID')
+REDDIT_CLIENT_SECRET = config('REDDIT_CLIENT_SECRET')
+REDDIT_REDIRECT_URI = config('REDDIT_REDIRECT_URI')
+REDDIT_USER_AGENT = config('REDDIT_USER_AGENT')
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'social_django.context_processors.backends',

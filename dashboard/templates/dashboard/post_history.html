@@ -1,0 +1,189 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Post History - Social Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-history"></i> Post History</h2>
+                <a href="{% url 'create_post' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New Post
+                </a>
+            </div>
+
+            {% if posts %}
+                {% for post in posts %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">{{ post.content|truncatechars:100 }}</h5>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock"></i> {{ post.created_at|date:"M d, Y H:i" }}
+                                </small>
+                            </div>
+                            <div>
+                                {% if post.media_url %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-image"></i> Media
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Post Content -->
+                        <p class="card-text">{{ post.content }}</p>
+                        
+                        {% if post.media_url %}
+                        <div class="mb-3">
+                            <a href="{{ post.media_url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-external-link-alt"></i> View Media
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <!-- Platform Shares -->
+                        <h6 class="text-muted mb-3">
+                            <i class="fas fa-share-alt"></i> Platform Shares
+                        </h6>
+                        
+                        {% for share in post.shares.all %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    {% if share.social_account.platform == 'twitter' %}
+                                        <i class="fab fa-twitter text-primary me-2"></i>
+                                    {% elif share.social_account.platform == 'instagram' %}
+                                        <i class="fab fa-instagram text-danger me-2"></i>
+                                    {% elif share.social_account.platform == 'facebook' %}
+                                        <i class="fab fa-facebook text-primary me-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-share-alt me-2"></i>
+                                    {% endif %}
+                                    
+                                    <div>
+                                        <strong>{{ share.social_account.platform|title }}</strong>
+                                        <br>
+                                        <small class="text-muted">@{{ share.social_account.account_username }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {% if share.is_successful %}
+                                    <div class="text-success">
+                                        <i class="fas fa-check-circle"></i> Successfully shared
+                                        {% if share.platform_url %}
+                                            <br>
+                                            <a href="{{ share.platform_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt"></i> View Post
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-danger">
+                                        <i class="fas fa-times-circle"></i> Failed to share
+                                        {% if share.error_message %}
+                                            <br>
+                                            <small>{{ share.error_message }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Analytics -->
+                        {% if share.live_analytics %}
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h6 class="text-muted">
+                                    <i class="fas fa-chart-line"></i> Analytics
+                                    {% if share.live_analytics.from_cache %}
+                                        <span class="badge bg-warning">Cached</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Live</span>
+                                    {% endif %}
+                                </h6>
+                                
+                                <div class="row text-center">
+                                    <div class="col-md-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <h5 class="text-primary mb-0">{{ share.live_analytics.likes|default:0 }}</h5>
+                                                <small class="text-muted">Likes</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <h5 class="text-info mb-0">{{ share.live_analytics.retweets|default:0 }}</h5>
+                                                <small class="text-muted">Retweets</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <h5 class="text-success mb-0">{{ share.live_analytics.replies|default:0 }}</h5>
+                                                <small class="text-muted">Replies</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <h5 class="text-warning mb-0">{{ share.live_analytics.impressions|default:0 }}</h5>
+                                                <small class="text-muted">Impressions</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <h5 class="text-secondary mb-0">{{ share.live_analytics.quotes|default:0 }}</h5>
+                                                <small class="text-muted">Quotes</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                {% if share.live_analytics.impressions %}
+                                                    {% widthratio share.live_analytics.likes|add:share.live_analytics.retweets|add:share.live_analytics.replies share.live_analytics.impressions 100 as engagement_rate %}
+                                                    <h5 class="text-danger mb-0">{{ engagement_rate|floatformat:1 }}%</h5>
+                                                {% else %}
+                                                    <h5 class="text-danger mb-0">0%</h5>
+                                                {% endif %}
+                                                <small class="text-muted">Engagement</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-edit fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No posts yet</h4>
+                        <p class="text-muted">Start sharing your content across social media platforms!</p>
+                        <a href="{% url 'create_post' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Your First Post
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
